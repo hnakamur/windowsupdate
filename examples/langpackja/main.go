@@ -73,15 +73,7 @@ func main() {
 	ole.CoInitialize(0)
 	defer ole.CoUninitialize()
 
-	rebootRequired, err := windowsupdate.IsRebootRequired()
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-	fmt.Printf("RebootRequired=%v\n", rebootRequired)
-	return
-
-	err = InstallJapaneseLanguagePack()
+	err := InstallJapaneseLanguagePack()
 	if err != nil {
 		fmt.Printf("Error: %v\n", err)
 		return

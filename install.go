@@ -1,8 +1,6 @@
 package windowsupdate
 
 import (
-	"fmt"
-
 	"github.com/mattn/go-ole"
 	"github.com/mattn/go-ole/oleutil"
 )
@@ -83,19 +81,4 @@ func toInstallationResult(resultDisp *ole.IDispatch, updateCount int) (*Installa
 			UpdateResult{ResultCode: int(resultCode), RebootRequired: rebootRequired})
 	}
 	return &result, nil
-}
-
-func IsRebootRequired() (bool, error) {
-	unknown, err := oleutil.CreateObject("Microsoft.Update.SystemInfo")
-	if err != nil {
-		return false, err
-	}
-	disp, err := unknown.QueryInterface(ole.IID_IDispatch)
-	if err != nil {
-		return false, err
-	}
-	v, err := oleutil.GetProperty(disp, "RebootRequired")
-	fmt.Printf("v=%v\n", v)
-
-	return toBoolErr(oleutil.GetProperty(disp, "RebootRequired"))
 }
