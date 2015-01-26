@@ -24,31 +24,20 @@ func InstallJapaneseLanguagePack() error {
 		return err
 	}
 
-	installed, err := update.Installed()
-	if err != nil {
-		return err
-	}
-
-	if installed {
+	if update.Installed {
 		fmt.Printf("already installed. exiting\n")
 		return nil
 	}
 
-	updates := []*windowsupdate.Update{update}
+	updates := []windowsupdate.Update{update}
 
-	downloaded, err := update.Downloaded()
-	if downloaded {
+	if update.Downloaded {
 		fmt.Printf("already downloaded, skip downloading\n")
 	} else {
 		err = session.Download(updates)
 		if err != nil {
 			return err
 		}
-		downloaded, err := update.Downloaded()
-		if err != nil {
-			return err
-		}
-		fmt.Printf("downloaded=%v\n", downloaded)
 	}
 
 	result, err := session.Install(updates)

@@ -5,7 +5,7 @@ import (
 	"github.com/mattn/go-ole/oleutil"
 )
 
-func (s *Session) Download(updates []*Update) error {
+func (s *Session) Download(updates []Update) error {
 	downloader, err := toIDispatchErr(oleutil.CallMethod((*ole.IDispatch)(s), "CreateUpdateDownloader"))
 	if err != nil {
 		return err
@@ -24,7 +24,7 @@ func (s *Session) Download(updates []*Update) error {
 	return err
 }
 
-func toUpdateCollection(updates []*Update) (*ole.IDispatch, error) {
+func toUpdateCollection(updates []Update) (*ole.IDispatch, error) {
 	unknown, err := oleutil.CreateObject("Microsoft.Update.UpdateColl")
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func toUpdateCollection(updates []*Update) (*ole.IDispatch, error) {
 		return nil, err
 	}
 	for _, update := range updates {
-		_, err := oleutil.CallMethod(coll, "Add", (*ole.IDispatch)(update))
+		_, err := oleutil.CallMethod(coll, "Add", update.disp)
 		if err != nil {
 			return nil, err
 		}

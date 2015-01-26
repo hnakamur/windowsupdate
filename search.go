@@ -7,22 +7,28 @@ import (
 	"github.com/mattn/go-ole/oleutil"
 )
 
-type Update ole.IDispatch
+type Update struct {
+	disp       *ole.IDispatch
+	ID         string
+	Title      string
+	Downloaded bool
+	Installed  bool
+}
 
 var UpdateNotFoundError = errors.New("Update not found")
 
-func (s *Session) FindByUpdateID(updateID string) (*Update, error) {
+func (s *Session) FindByUpdateID(updateID string) (Update, error) {
 	updates, err := s.Search("UpdateID='" + updateID + "'")
 	if err != nil {
-		return nil, err
+		return Update{}, err
 	}
 	if len(updates) == 0 {
-		return nil, UpdateNotFoundError
+		return Update{}, UpdateNotFoundError
 	}
 	return updates[0], nil
 }
 
-func (s *Session) Search(criteria string) ([]*Update, error) {
+func (s *Session) Search(criteria string) ([]Update, error) {
 	searcher, err := toIDispatchErr(oleutil.CallMethod((*ole.IDispatch)(s), "CreateUpdateSearcher"))
 	if err != nil {
 		return nil, err
@@ -38,40 +44,62 @@ func (s *Session) Search(criteria string) ([]*Update, error) {
 		return nil, err
 	}
 
+	return toUpdates(updatesDisp)
+}
+
+func toUpdates(updatesDisp *ole.IDispatch) ([]Update, error) {
 	count, err := toInt64Err(oleutil.GetProperty(updatesDisp, "Count"))
 	if err != nil {
 		return nil, err
 	}
 
-	var updates []*Update
+	var updates []Update
 	for i := 0; i < int(count); i++ {
-		update, err := toIDispatchErr(oleutil.GetProperty(updatesDisp, "Item", i))
+		updateDisp, err := toIDispatchErr(oleutil.GetProperty(updatesDisp, "Item", i))
 		if err != nil {
 			return nil, err
 		}
 
-		updates = append(updates, (*Update)(update))
+		update, err := toUpdate(updateDisp)
+		if err != nil {
+			return nil, err
+		}
+
+		updates = append(updates, update)
 	}
 	return updates, nil
 }
 
-func (u *Update) ID() (string, error) {
-	identity, err := toIDispatchErr(oleutil.GetProperty((*ole.IDispatch)(u), "Identity"))
+func toUpdate(updateDisp *ole.IDispatch) (Update, error) {
+	update := Update{disp: updateDisp}
+	identity, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Identity"))
 	if err != nil {
-		return "", err
+		return update, err
 	}
 
-	return toStrErr(oleutil.GetProperty(identity, "UpdateID"))
-}
+	id, err := toStrErr(oleutil.GetProperty(identity, "UpdateID"))
+	if err != nil {
+		return update, err
+	}
+	update.ID = id
 
-func (u *Update) Title() (string, error) {
-	return toStrErr(oleutil.GetProperty((*ole.IDispatch)(u), "Title"))
-}
+	title, err := toStrErr(oleutil.GetProperty(updateDisp, "Title"))
+	if err != nil {
+		return update, err
+	}
+	update.Title = title
 
-func (u *Update) Downloaded() (bool, error) {
-	return toBoolErr(oleutil.GetProperty((*ole.IDispatch)(u), "IsDownloaded"))
-}
+	downloaded, err := toBoolErr(oleutil.GetProperty(updateDisp, "IsDownloaded"))
+	if err != nil {
+		return update, err
+	}
+	update.Downloaded = downloaded
 
-func (u *Update) Installed() (bool, error) {
-	return toBoolErr(oleutil.GetProperty((*ole.IDispatch)(u), "IsInstalled"))
+	installed, err := toBoolErr(oleutil.GetProperty(updateDisp, "IsInstalled"))
+	if err != nil {
+		return update, err
+	}
+	update.Installed = installed
+
+	return update, nil
 }

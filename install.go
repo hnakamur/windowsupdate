@@ -26,7 +26,7 @@ type UpdateResult struct {
 	ResultCode     int
 }
 
-func (s *Session) Install(updates []*Update) (*InstallationResult, error) {
+func (s *Session) Install(updates []Update) (*InstallationResult, error) {
 	installer, err := toIDispatchErr(oleutil.CallMethod((*ole.IDispatch)(s), "CreateUpdateInstaller"))
 	if err != nil {
 		return nil, err
