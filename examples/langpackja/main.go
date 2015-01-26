@@ -60,11 +60,6 @@ func InstallJapaneseLanguagePack() error {
 	for i, ur := range result.UpdateResults {
 		fmt.Printf("UpdateResult[%d] ResultCode=%d, RebootRequired=%v\n", i, ur.ResultCode, ur.RebootRequired)
 	}
-	//	installed, err = update.Installed()
-	//	if err != nil {
-	//		return err
-	//	}
-	//	fmt.Printf("installed=%v\n", installed)
 
 	return nil
 }
