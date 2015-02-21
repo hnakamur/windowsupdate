@@ -48,7 +48,7 @@ func (s *Session) Search(criteria string) ([]Update, error) {
 }
 
 func toUpdates(updatesDisp *ole.IDispatch) ([]Update, error) {
-	count, err := toInt64Err(oleutil.GetProperty(updatesDisp, "Count"))
+	count, err := toInt32Err(oleutil.GetProperty(updatesDisp, "Count"))
 	if err != nil {
 		return nil, err
 	}

@@ -58,7 +58,7 @@ func toInstallationResult(resultDisp *ole.IDispatch, updateCount int) (Installat
 	}
 	result.RebootRequired = rebootRequired
 
-	resultCode, err := toInt64Err(oleutil.GetProperty(resultDisp, "ResultCode"))
+	resultCode, err := toInt32Err(oleutil.GetProperty(resultDisp, "ResultCode"))
 	if err != nil {
 		return result, err
 	}
@@ -74,7 +74,7 @@ func toInstallationResult(resultDisp *ole.IDispatch, updateCount int) (Installat
 			return result, err
 		}
 
-		resultCode, err := toInt64Err(oleutil.GetProperty(urDisp, "ResultCode"))
+		resultCode, err := toInt32Err(oleutil.GetProperty(urDisp, "ResultCode"))
 		if err != nil {
 			return result, err
 		}

@@ -16,6 +16,13 @@ func toInt64Err(result *ole.VARIANT, err error) (int64, error) {
 	return variantToInt64(result), nil
 }
 
+func toInt32Err(result *ole.VARIANT, err error) (int32, error) {
+	if err != nil {
+		return 0, err
+	}
+	return variantToInt32(result), nil
+}
+
 func toStrErr(result *ole.VARIANT, err error) (string, error) {
 	if err != nil {
 		return "", err
@@ -32,6 +39,10 @@ func toBoolErr(result *ole.VARIANT, err error) (bool, error) {
 
 func variantToInt64(v *ole.VARIANT) int64 {
 	return v.Value().(int64)
+}
+
+func variantToInt32(v *ole.VARIANT) int32 {
+	return v.Value().(int32)
 }
 
 func variantToStr(v *ole.VARIANT) string {
