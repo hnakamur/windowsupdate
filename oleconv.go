@@ -1,6 +1,6 @@
 package windowsupdate
 
-import "github.com/mattn/go-ole"
+import "github.com/go-ole/go-ole"
 
 func toIDispatchErr(result *ole.VARIANT, err error) (*ole.IDispatch, error) {
 	if err != nil {

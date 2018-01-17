@@ -3,16 +3,21 @@ package windowsupdate
 import (
 	"errors"
 
-	"github.com/mattn/go-ole"
-	"github.com/mattn/go-ole/oleutil"
+	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 type Update struct {
 	disp       *ole.IDispatch
-	ID         string
+	Identity         IUpdateIdentity
 	Title      string
-	Downloaded bool
-	Installed  bool
+	IsDownloaded bool
+	IsInstalled  bool
+}
+
+type IUpdateIdentity struct { 
+	RevisionNumber int32
+	UpdateID string
 }
 
 var UpdateNotFoundError = errors.New("Update not found")
@@ -70,36 +75,31 @@ func toUpdates(updatesDisp *ole.IDispatch) ([]Update, error) {
 	return updates, nil
 }
 
-func toUpdate(updateDisp *ole.IDispatch) (Update, error) {
-	update := Update{disp: updateDisp}
+func toUpdate(updateDisp *ole.IDispatch) (update Update, err error) {
+	update.disp = updateDisp
 	identity, err := toIDispatchErr(oleutil.GetProperty(updateDisp, "Identity"))
 	if err != nil {
 		return update, err
 	}
 
-	id, err := toStrErr(oleutil.GetProperty(identity, "UpdateID"))
-	if err != nil {
+	if update.Identity.RevisionNumber, err = toInt32Err(oleutil.GetProperty(identity, "RevisionNumber")); err != nil {
 		return update, err
 	}
-	update.ID = id
+	if update.Identity.UpdateID, err = toStrErr(oleutil.GetProperty(identity, "UpdateID")); err != nil {
+		return update, err
+	}
 
-	title, err := toStrErr(oleutil.GetProperty(updateDisp, "Title"))
-	if err != nil {
+	if update.Title, err = toStrErr(oleutil.GetProperty(updateDisp, "Title"));  err != nil {
 		return update, err
 	}
-	update.Title = title
 
-	downloaded, err := toBoolErr(oleutil.GetProperty(updateDisp, "IsDownloaded"))
-	if err != nil {
+	if update.IsDownloaded, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsDownloaded"));  err != nil {
 		return update, err
 	}
-	update.Downloaded = downloaded
 
-	installed, err := toBoolErr(oleutil.GetProperty(updateDisp, "IsInstalled"))
-	if err != nil {
+	if update.IsInstalled, err = toBoolErr(oleutil.GetProperty(updateDisp, "IsInstalled")); err != nil {
 		return update, err
 	}
-	update.Installed = installed
 
 	return update, nil
 }

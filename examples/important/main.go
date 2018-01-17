@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hnakamur/windowsupdate"
-	"github.com/mattn/go-ole"
+	"github.com/go-ole/go-ole"
 )
 
 func main() {
