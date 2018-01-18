@@ -1,5 +1,4 @@
 package windowsupdate
-
 func InstallImportantUpdates() (updatesToInstall []Update, result InstallationResult, err error) {
 	session, err := NewSession()
 	if err != nil {
@@ -31,7 +30,7 @@ func InstallImportantUpdates() (updatesToInstall []Update, result InstallationRe
 func selectUpdatesToDownload(updatesToInstall []Update) []Update {
 	updates := []Update{}
 	for _, update := range updatesToInstall {
-		if !update.Downloaded {
+		if !update.IsDownloaded {
 			updates = append(updates, update)
 		}
 	}

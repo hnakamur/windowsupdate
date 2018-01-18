@@ -1,8 +1,8 @@
 package windowsupdate
 
 import (
-	"github.com/mattn/go-ole"
-	"github.com/mattn/go-ole/oleutil"
+	"github.com/go-ole/go-ole"
+	"github.com/go-ole/go-ole/oleutil"
 )
 
 const (

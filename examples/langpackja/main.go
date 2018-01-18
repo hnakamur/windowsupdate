@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/go-ole/go-ole"
 	"github.com/hnakamur/windowsupdate"
-	"github.com/mattn/go-ole"
 )
 
 const (
